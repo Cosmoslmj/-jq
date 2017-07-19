@@ -8,10 +8,15 @@
      , $task_detail = $('.task-detail')
      , $task_detail_mask = $('.task-detail-mask')
      , task_list = []
+     , current_index
+     , $update_form
+     , $task_detail_content
+     , $task_detail_content_input
      ;
+
      init();
    $form_add_list.on('submit', on_add_list_form_submit)
-   $form_add_list.on('click', hide_task_detail)
+   $task_detail_mask.on('click', hide_task_detail)
    function on_add_list_form_submit(e) {
       var new_task = {}, $input;
       // 禁用默认行为
@@ -35,16 +40,70 @@
       show_task_detail(index);
     })
    }
-      
+     // 查看task详情 
   function show_task_detail(index) {
-    $task_detail.show();
-    console.log(8)
+    render_task_detail(index)
+    current_index = index;
+    $task_detail.css('display', 'block');
     $task_detail_mask.show(); 
-    console.log('s')
+  }
+
+  function update_task(index, data) {
+    if(!index || !task_list[index])
+      return;
+    // task_list[index] = $.merge({}, task_list[index], data);
+     task_list[index] = data;
+    refresh_task_list();
   }
     function hide_task_detail() {
     $task_detail.hide();
     $task_detail_mask.hide(); 
+  }
+// 渲染指定task详细信息
+  function render_task_detail (index) {
+    if (index === undefined || !task_list[index])
+     return;
+    var item = task_list[index];
+
+     var tpl =  '<form>' +
+        '<div class="content">' + 
+          item.content +  
+      '</div>'+ 
+      '<div class="input-item">' +
+      '<input style="display: none;" type="text" name="content" value="' + (item.content || '') +'">' +
+      '</div>' +
+      '<div>'+  
+          '<div class="desc input-item">'+
+              '<textarea name="desc">' + (item.desc || '') + '</textarea>' +
+          '</div>' +
+      '</div>' +
+      '<div class="remind input-item"> ' + 
+          '<input type="date" name="remind_date" value="' + item.remind_date +'">' +
+      '</div> ' + 
+      '<div class="input-item"><button type="submit">更新</button></div>' +
+     '</form>';
+
+     $task_detail.html(null);
+     $task_detail.html(tpl);
+     $update_form = $task_detail.find('form');
+     $task_detail_content = $update_form.find('.content');
+     $task_detail_content_input = $update_form.find('[name=content]');
+     $task_detail_content.on('dblclick', function () {
+        $task_detail_content_input.show();
+        $task_detail_content.hide();
+     })
+     $update_form.on('submit', function(e) {
+       e.preventDefault();
+       var data = {};
+       data.content = $(this).find('[name=content]').val();
+       data.desc = $(this).find('[name=desc]').val();
+       data.remind_date = $(this).find('[name=remind_date]').val();
+       update_task(index, data);
+       hide_task_detail();
+       console.log(data);
+       // console.log('ttt');
+     })
+
   }
       // 查找并监听所有删除按钮的点击事件
       function listen_task_delete() {
@@ -59,6 +118,7 @@
         })
       }
        function add_list(new_task) {
+
         // 存入Task推入task_list
          task_list.push(new_task);
          // 更新localStorager
@@ -96,7 +156,7 @@
         $task_list.html('');
         for (var i = 0; i < task_list.length; i++) {
             var $task = render_task_item(task_list[i], i);
-            $task_list.append($task);
+            $task_list.prepend($task);  //往前加  append往后加
             // console.log('task_list', task_list );
         }
         $task_delete_trigger  = $('.action.delete')
