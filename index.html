@@ -9,11 +9,11 @@
 <body>
 <!-- 容器开始 -->
 <div class="container">
-  <h1>清单列表</h1>
-  <div class="add-list">
-      <input type="text" name="增加" placeholder="记得打印身份证复印件哦。。。。。">
+  <h1>任务清单列表</h1>
+    <form class="add-list">
+      <input type="text" name="content" placeholder="记得打印身份证复印件哦。。。。。" autofocus autocomplete="off">
       <button type="submit">提交</button>
-  </div>
+    </form>
   <!-- 清单列表开始 -->
   <div class="task-list">
       <!-- <div class="task-item">
@@ -22,24 +22,6 @@
           <span>删除</span>
           <span>显示详情</span>
       </div>
-      <div class="task-item">
-          <span><input type="checkbox"></span>
-          <span class="task-content">内容</span>
-          <span>删除</span>
-          <span>显示详情</span>
-      </div>
-      <div class="task-item">
-          <span><input type="checkbox"></span>
-          <span class="task-content">内容</span>
-          <span>删除</span>
-          <span>显示详情</span>
-      </div>
-      <div class="task-item">
-          <span><input type="checkbox"></span>
-          <span class="task-content">内容</span>
-          <span>删除</span>
-          <span>显示详情</span>
-      </div> -->
   </div>
   <!-- 清单列表结束 -->
   <!-- 任务详情开始 -->
@@ -63,8 +45,7 @@
 </div>
 <!-- 容器结束 -->
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="js/base.js"></script>
     <script type="text/javascript" src="node_modules/storejs/dist/store.min.js">
-    store("todo", "tank")
     </script>
+    <script type="text/javascript" src="js/base.js"></script>   
 </body>

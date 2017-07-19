@@ -19,6 +19,7 @@ body {
     max-width: 900px;
     margin: 0 auto;
     position: relative;
+    padding: 0 10px;
 }
 h1 {
     text-align: center;
@@ -114,7 +115,7 @@ button {
     width: 50%;
     height: 100%;
     color: #333;
-    display: none;
+  /*  display: none;*/
 }
 .task-detail-mask {
   top: 0;
@@ -130,4 +131,17 @@ button {
 }
 .task-detail > * {
     margin-bottom: 10px;
+}
+.task-content {
+  margin-left: 10px;
+}
+.action {
+  color: #888;
+  font-size: 90%;
+}
+.anchor:hover {
+  #333;
+}
+.fr {
+  float: right;
 }
