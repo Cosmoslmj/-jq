@@ -32,7 +32,13 @@
         $input.val(null);
       }  
    }
+   // 点击详情监听打开Task详情事件
    function listen_task_detail() {
+    var index;
+    $('.task-item').on('dblclick', function() {
+      index = $(this).data('index');
+      show_task_detail(index);
+    })
     $task_detail_trigger.on('click', function() {
       var $this = $(this);
       var $item = $this.parent().parent();
@@ -42,12 +48,16 @@
    }
      // 查看task详情 
   function show_task_detail(index) {
+    // 生成详情模版
     render_task_detail(index)
     current_index = index;
+    // 默认隐藏，点击详情显示详情模版
     $task_detail.css('display', 'block');
+    // 显示详情背景mask
     $task_detail_mask.show(); 
   }
 
+  // 更新task
   function update_task(index, data) {
     if(!index || !task_list[index])
       return;
@@ -55,6 +65,7 @@
      task_list[index] = data;
     refresh_task_list();
   }
+  // 点击旁边隐藏task详情
     function hide_task_detail() {
     $task_detail.hide();
     $task_detail_mask.hide(); 
@@ -65,6 +76,7 @@
      return;
     var item = task_list[index];
 
+// 渲染模版
      var tpl =  '<form>' +
         '<div class="content">' + 
           item.content +  
@@ -83,11 +95,22 @@
       '<div class="input-item"><button type="submit">更新</button></div>' +
      '</form>';
 
+     // 清空详情模版
      $task_detail.html(null);
+
+     // 再添加新模版
      $task_detail.html(tpl);
+
+     // 选中期中一个form元素，因为之后会使用其监听submit事件
      $update_form = $task_detail.find('form');
+
+     // 选中显示Task内容的元素
      $task_detail_content = $update_form.find('.content');
+
+     // 选中显示Task input的元素
      $task_detail_content_input = $update_form.find('[name=content]');
+
+     // 双击内容元素显示input 隐藏自己
      $task_detail_content.on('dblclick', function () {
         $task_detail_content_input.show();
         $task_detail_content.hide();
@@ -95,6 +118,7 @@
      $update_form.on('submit', function(e) {
        e.preventDefault();
        var data = {};
+       // 获取表单中各个input的值
        data.content = $(this).find('[name=content]').val();
        data.desc = $(this).find('[name=desc]').val();
        data.remind_date = $(this).find('[name=remind_date]').val();
