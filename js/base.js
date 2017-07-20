@@ -12,6 +12,7 @@
      , $update_form
      , $task_detail_content
      , $task_detail_content_input
+     , $checkbox_complete
      ;
 
      init();
@@ -42,10 +43,31 @@
     $task_detail_trigger.on('click', function() {
       var $this = $(this);
       var $item = $this.parent().parent();
-      var index = $item.data('index')
+      index = $item.data('index')
       show_task_detail(index);
     })
    }
+    // 监听完成任务事件
+    function listen_checkbox_complete() {
+      $checkbox_complete.on('click', function() {
+        var $this = $(this);
+        // var is_complete = $this.is(':checked');
+        var index = $this.parent().parent().data('index');
+        var item = get(index);
+        if (item.complete)
+          update_task(index, {complete: false});
+          // $this.attr('checked', true);
+        else 
+          update_task(index, {complete: true});
+          // $this.attr('checked', false);
+          // prop('checked', false)
+      })
+    }
+    
+    function get(index) {
+      return store.get('task_list')[index];
+    }
+
      // 查看task详情 
   function show_task_detail(index) {
     // 生成详情模版
@@ -61,8 +83,9 @@
   function update_task(index, data) {
     if(!index || !task_list[index])
       return;
-    // task_list[index] = $.merge({}, task_list[index], data);
-     task_list[index] = data;
+    // complete: true /false
+    //merge 数组 extend 对象;
+     task_list[index] = $.extend({}, task_list[index], data);
     refresh_task_list();
   }
   // 点击旁边隐藏task详情
@@ -90,7 +113,8 @@
           '</div>' +
       '</div>' +
       '<div class="remind input-item"> ' + 
-          '<input type="date" name="remind_date" value="' + item.remind_date +'">' +
+          '<label> 提醒时间 </label>' + 
+          '<input class="datetime" type="text" name="remind_date" value="' + (item.remind_date || '') +'">' +
       '</div> ' + 
       '<div class="input-item"><button type="submit">更新</button></div>' +
      '</form>';
@@ -100,6 +124,8 @@
 
      // 再添加新模版
      $task_detail.html(tpl);
+
+     $('.datetime').datetimepicker();
 
      // 选中期中一个form元素，因为之后会使用其监听submit事件
      $update_form = $task_detail.find('form');
@@ -124,7 +150,7 @@
        data.remind_date = $(this).find('[name=remind_date]').val();
        update_task(index, data);
        hide_task_detail();
-       console.log(data);
+       // console.log(data);
        // console.log('ttt');
      })
 
@@ -178,22 +204,35 @@
        function render_task_list() {
         var $task_list = $('.task-list');
         $task_list.html('');
+        var complete_items = [];
         for (var i = 0; i < task_list.length; i++) {
-            var $task = render_task_item(task_list[i], i);
+            var item = task_list[i];
+            if (item && item.complete)
+              complete_items[i] = (item);
+            else 
+            var $task = render_task_item(item, i);
             $task_list.prepend($task);  //往前加  append往后加
             // console.log('task_list', task_list );
         }
+        for(var j = 0; j <complete_items.length; j++) {          
+          $task = render_task_item(complete_items[j], j);
+          if (!$task) continue;
+          $task.addClass('completed');
+          $task_list.append($task); 
+        }
         $task_delete_trigger  = $('.action.delete')
         $task_detail_trigger = $('.action.detail')
+        $checkbox_complete = $('.task-list .complete[type=checkbox]')
         listen_task_delete();
         listen_task_detail();
+        listen_checkbox_complete();
        }
        // 渲染单条task模版
        function render_task_item(data, index) {
           if(!data || !index) return;
              var list_item_tpl =
               '<div class="task-item" data-index="'+ index +'">'+
-              '<span><input type="checkbox"></span>' +
+              '<span><input class="complete"' + (data.complete ? 'checked' : '') + ' type="checkbox"></span>' +
               '<span class="task-content">' + data.content + '</span>' +
               '<span class="fr">' +
               '<span class="action delete"> 删除</span>' +
